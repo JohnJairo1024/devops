@@ -1,0 +1,49 @@
+version: '1'
+
+ms:
+  name: 'gallery'
+  port: 9001
+  memory: 768
+  javaOptions: '-Xms128m -Xmx512m'
+  apiGWStage: 'securityManagement'
+  environment:
+    - SPRING_APPLICATION_NAME: 'gallery'
+    - SERVER_PORT: '9001'
+  files:
+    - key: 'template.tpl'
+      path: '/usr/templates'
+      name: 'template.tpl'
+    - key: 'cacert.old'
+      path: '/usr/share/java'
+      name: 'cacert'
+
+  stacks:
+
+    - stack: 'dev'
+      apiGWStage: 'securityManagementDev'
+      environment:
+        - SPRING_PROFILES_ACTIVE: 'dev'
+      files:
+        - key: 'pem'
+          path: '/app'
+          name: 'server.pem'
+
+    - stack: 'stg'
+      memory: 1024
+      javaOptions: '-Xms768m -Xmx896m'
+      environment:
+        - SPRING_PROFILES_ACTIVE: 'stg'
+
+    - stack: 'pro'
+      memory: 2048
+      javaOptions: '-Xms1024m -Xmx1792m'
+      environment:
+        - SPRING_PROFILES_ACTIVE: 'prod'
+
+params:
+  static:
+    - 'server.address',
+    - 'info.app.version'
+  dynamic:
+    - 'info.app.name'
+    - 'ath-services.login.url'

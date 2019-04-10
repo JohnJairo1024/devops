@@ -1,0 +1,17 @@
+server:
+  port: 9001
+management:
+  endpoints:
+    web:
+      base-path: '/'
+  endpoint:
+    info:
+      sensitive: false
+      enabled: true
+    health:
+      sensitive: false
+      enabled: true
+
+info:
+  owner: John Ochoa<john.ochoa1024@gmail.com>
+  pod: DevOps

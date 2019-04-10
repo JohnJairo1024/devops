@@ -1,0 +1,81 @@
+buildscript {
+    ext {
+        springBootVersion = '2.1.2.RELEASE'
+        lombokVersion = '1.18.4'
+        jfrogUsername = System.getenv('JFROG_USERNAME')
+        jfrogPassword = System.getenv('JFROG_PASSWORD')
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url "https://avaldigitallabs.jfrog.io/avaldigitallabs/libs-release"
+        credentials {
+            username = "$jfrogUsername"
+            password = "$jfrogPassword"
+        }
+    }
+    maven {
+        url "https://avaldigitallabs.jfrog.io/avaldigitallabs/libs-snapshot"
+        credentials {
+            username = "$jfrogUsername"
+            password = "$jfrogPassword"
+        }
+    }
+}
+
+dependencies {
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+
+    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter-actuator')
+
+    //compile('co.com.adl.pb.commons:adl-jwt-security:0.0.1-SNAPSHOT')
+	//compile('co.com.adl.pb.commons:adl-pb-ath-transfers-sdk:1.0.1-SNAPSHOT')
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+
+    testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
+
+    testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+}
+
+test {
+    testLogging.showStandardStreams = true
+
+    testLogging {
+        events('PASSED', 'FAILED', 'SKIPPED', 'STANDARD_OUT', 'STANDARD_ERROR')
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+            'Implementation-Title': 'Test',
+            'Implementation-Version': "${version}",
+            'Created-By': 'John',            
+            'Built-Date': new Date().format('yyyy-MM-dd HH:mm:ss'),
+            'Description': "${description}"
+        )
+    }
+}
